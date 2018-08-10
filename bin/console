@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+# Скрипт, запускающий IRB
+
+Encoding.default_internal = Encoding::UTF_8
+Encoding.default_external = Encoding::UTF_8
+
+require_relative '../config/app_init.rb'
+Dir["#{$lib}/**/*.rb"].each(&method(:require))
+require 'irb'
+require 'irb/completion'
+
+begin
+  require_relative '../spec/spec_helper'
+rescue LoadError
+  nil
+end
+
+begin
+  require 'awesome_print'
+rescue LoadError
+  nil
+end
+
+IRB.start
