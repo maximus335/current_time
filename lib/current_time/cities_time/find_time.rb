@@ -5,11 +5,9 @@ require 'wheretz'
 
 module CurrentTime
   class CitiesTime
-    # Класс запросов к сервису Яндекса для получения информации о
-    # географических координатах города
     class FindTime
-      # Создаёт объект класса и с его помощью осуществляет запрос,
-      # извлекает информацию о временной зоне
+      # Создаёт объект класса и с его помощью извлекает информацию
+      # о временной зоне
       # города
       # @param [Array] coos
       #   объект с информацией координатах города
@@ -23,9 +21,6 @@ module CurrentTime
         new(coos).find_time
       end
 
-      # Инициализирует объект класса
-      # @param [Array] coos
-      #   объект с информацией координатах города
       def initialize(coos)
         @coos = coos
       end
@@ -47,12 +42,13 @@ module CurrentTime
         offset = timezone.current_period.offset.utc_total_offset
 
         Time.now.getlocal(offset).strftime("%Y-%m-%d %H:%M:%S")
+      rescue => e
+        $logger.error("#{e.class}: #{e.message}")
+        nil
       end
 
       private
-      # Строка с наименованием города
-      # @return [Array]
-      #   объект с информацией координатах города
+
       attr_reader :coos
 
       def not_found

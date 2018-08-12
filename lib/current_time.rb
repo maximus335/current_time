@@ -2,7 +2,6 @@
 
 require 'socket'
 require 'thread'
-require 'json'
 
 module CurrentTime
   class WebServer
@@ -14,23 +13,29 @@ module CurrentTime
 
     attr_reader :server
 
+    # Запускает web сервер
     def self.run!
       new.run
     end
 
+    # Запускает web сервер
     def run
       loop do
         thread = Thread.new(server.accept) do |session|
+          begin
           request = session.gets
-          next if request.nil?
+          next unless request
           path, params = http_parse(request)
-          next if path.nil?
-          if valid_request?(path)
-            $logger.debug "PARAMS   #{params}"
+          next unless path
+          if rout_match?(path)
             results = CurrentTime::PrepareResponse.response(params)
             response_process(session, '200', results)
           else
             response_process(session, '400', ['Bad request'])
+          end
+          rescue => e
+            $logger.error("#{e.class}: #{e.message}")
+            response_process(session, '500', ['Internal Server Error'])
           end
         end
         thread.value
@@ -39,6 +44,13 @@ module CurrentTime
 
     private
 
+    # Формирует ответ на http запрос
+    # @params [TCPSocket] session
+    #  сокет
+    # @params [String] status
+    #  http статус ответа
+    # @params [Array] results
+    #  тело ответа
     def response_process(session, status, results)
       session.print "HTTP/1.1 #{status} Bad Request\r\n" # 1
       session.print "Content-Type: text/html\r\n" # 2
@@ -49,15 +61,25 @@ module CurrentTime
       session.close
     end
 
-    def valid_request?(path)
-      path.include?('/time')
+    # Проверяет валидность роута
+    # @return [Boolean]
+    #  результат проверки
+    def rout_match?(path)
+      path == '/time'
     end
 
+    # Возвращает path и params http запроса
+    # @params [String] request
+    #  запрос
+    # @return [Array]
+    #  path и params http запроса
     def http_parse(request)
-      request = request.chomp.force_encoding('utf-8')
-      request_map = request.split('?')
-      path = request_map.first
-      params = request_map.count > 1 ? request_map.last.delete('HTTP/1.1').split(',') : nil
+      request = request.chomp.split(' ')[1]
+      $logger.debug(request)
+      uri = URI.parse(request)
+      query = uri.query
+      path = uri.path
+      params = URI.decode(query).split(',') if query
       [path, params]
     end
   end

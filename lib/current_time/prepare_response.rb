@@ -10,10 +10,23 @@ module CurrentTime
 
     attr_reader :params
 
+    # Инициализирует объект класса, и возвращает массив
+    # с временем городов и текущим временем сервера
+    # @params [Array] params
+    #  список городов
+    # @return [Array]
+    #  текущее время сервера с случае если параметры пустые
+    # @return [Array]
+    #  массив с временем городов переданных и текущим временем сервера
     def self.response(params)
       new(params).response
     end
 
+    # Возвращает массив с временем городов и текущим временем сервера
+    # @return [Array]
+    #  текущее время сервера с случае если параметры пустые
+    # @return [Array]
+    #  массив с временем городов переданных и текущим временем сервера
     def response
       case params.count
       when 0
@@ -26,6 +39,11 @@ module CurrentTime
 
     private
 
+    # Подготавливает результат
+    # @params [Hash] cities_time
+    #  ассоциативный массив с временем городов
+    # @return [Array]
+    #  массив с временем городов переданных и текущим временем сервера
     def result(cities_time)
       utc = "UTC: #{Time.now.strftime("%Y-%m-%d %H:%M:%S")}"
       cities_time.each_with_object([utc]) do |(key, value), memo|

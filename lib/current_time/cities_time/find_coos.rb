@@ -1,11 +1,10 @@
 # encoding: utf-8
 
 require 'rest-client'
+require 'json'
 
 module CurrentTime
   class CitiesTime
-    # Класс запросов к сервису Яндекса для получения информации о
-    # географических координатах города
     class FindCoos
       # Создаёт объект класса и с его помощью осуществляет запрос,
       # извлекает информацию о географических координатах города и
@@ -25,9 +24,6 @@ module CurrentTime
         new(city).find_coos
       end
 
-      # Инициализирует объект класса
-      # @param [#to_s] address
-      #   объект с информацией о городе
       def initialize(city)
         @city = city.to_s.gsub(/%20/, '+')
       end
@@ -67,14 +63,13 @@ module CurrentTime
         data = JSON.parse(response.body, symbolize_names: true)
         point = data.dig(*POINT_PATH)
         point.split(' ')
-      rescue
+      rescue => e
+        $logger.error("#{e.class}: #{e.message}")
         nil
       end
 
       private
-      # Строка с наименованием города
-      # @return [String]
-      #   строка с адресом УИК
+
       attr_reader :city
     end
   end
