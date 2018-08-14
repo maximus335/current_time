@@ -34,7 +34,6 @@ module CurrentTime
       #   ошибка при осуществлении запроса или обработке его
       #   результата.
       def find_time
-        return not_found if coos.nil?
         lat = coos[1].to_f
         lng = coos[0].to_f
         timezone_name = WhereTZ.lookup(lat, lng)

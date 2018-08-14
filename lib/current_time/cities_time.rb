@@ -40,7 +40,7 @@ module CurrentTime
     #  время города
     def city_time(city)
       city_coos = FindCoos.find_coos(city)
-      FindTime.find_time(city_coos)
+      city_coos.nil? ? 'Not found' : FindTime.find_time(city_coos)
     end
 
   end

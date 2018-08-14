@@ -1,7 +1,7 @@
 install:
 	bundle install
 
-debug:
+console:
 	bundle exec bin/console
 
 run:

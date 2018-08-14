@@ -2,6 +2,7 @@
 
 require 'socket'
 require 'thread'
+require "unicode"
 
 module CurrentTime
   class WebServer
@@ -13,7 +14,7 @@ module CurrentTime
 
     attr_reader :server
 
-    # Запускает web сервер
+    # Создаёт объект класса и запускает web сервер
     def self.run!
       new.run
     end
