@@ -5,7 +5,7 @@ require 'thread'
 
 module CurrentTime
   class WebServer
-    require_relative 'current_time/prepare_response'
+    require_relative 'prepare_response'
 
     def initialize
       @server = TCPServer.new(8108)
@@ -21,24 +21,23 @@ module CurrentTime
     # Запускает web сервер
     def run
       loop do
-        thread = Thread.new(server.accept) do |session|
+        Thread.start(server.accept) do |session|
           begin
-          request = session.gets
-          next unless request
-          path, params = http_parse(request)
-          next unless path
-          if rout_match?(path)
-            results = CurrentTime::PrepareResponse.response(params)
-            response_process(session, '200', results)
-          else
-            response_process(session, '400', ['Bad request'])
-          end
+            request = session.gets
+            next unless request
+            path, params = http_parse(request)
+            next unless path
+            if rout_match?(path)
+              results = CurrentTime::PrepareResponse.response(params)
+              response_process(session, '200', results)
+            else
+              response_process(session, '400', ['Bad request'])
+            end
           rescue => e
             $logger.error("#{e.class}: #{e.message}")
             response_process(session, '500', ['Internal Server Error'])
           end
         end
-        thread.value
       end
     end
 

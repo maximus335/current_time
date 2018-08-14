@@ -6,3 +6,6 @@ debug:
 
 run:
 	ruby app.rb
+
+test:
+	bundle exec rspec --fail-fast

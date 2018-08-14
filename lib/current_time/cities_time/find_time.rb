@@ -1,4 +1,4 @@
-# encoding: utf-8
+# frozen_string_literal: true
 
 require 'tzinfo'
 require 'wheretz'
@@ -41,10 +41,10 @@ module CurrentTime
         timezone = TZInfo::Timezone.get(timezone_name)
         offset = timezone.current_period.offset.utc_total_offset
 
-        Time.now.getlocal(offset).strftime("%Y-%m-%d %H:%M:%S")
+        Time.now.getlocal(offset).strftime('%d-%m-%Y %H:%M')
       rescue => e
         $logger.error("#{e.class}: #{e.message}")
-        nil
+        not_found
       end
 
       private
