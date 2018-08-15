@@ -2,7 +2,6 @@
 
 require 'socket'
 require 'thread'
-require "unicode"
 
 module CurrentTime
   class WebServer
