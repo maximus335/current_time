@@ -3,7 +3,6 @@
 require 'socket'
 require 'thread'
 
-
 module CurrentTime
   class WebServer
     require_relative 'prepare_response'
