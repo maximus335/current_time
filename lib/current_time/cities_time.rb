@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
+require 'tzinfo'
+
 module CurrentTime
   class CitiesTime
-    require_relative 'cities_time/find_coos'
-    require_relative 'cities_time/find_time'
 
     def initialize(params)
       @cities = params
@@ -39,9 +39,19 @@ module CurrentTime
     # @return [String]
     #  время города
     def city_time(city)
-      city_coos = FindCoos.find_coos(city)
-      city_coos.nil? ? 'Not found' : FindTime.find_time(city_coos)
+      city = sanitize_string(city)
+      timezone = TZInfo::Timezone.all.find do |tz|
+        tz_city = sanitize_string(tz.name.split('/').last)
+        tz_city == city
+      end
+      return 'Not found' unless timezone
+      offset = timezone.current_period.offset.utc_total_offset
+      Time.now.getlocal(offset).strftime('%d-%m-%Y %H:%M:%S')
     end
 
+    # Преобразует строку в нужный формат
+    def sanitize_string(string)
+      string.gsub(/[^A-Za-z]+/, '').downcase
+    end
   end
 end

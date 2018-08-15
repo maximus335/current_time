@@ -30,7 +30,7 @@ module CurrentTime
     def response
       case params.count
       when 0
-        ["UTC: #{Time.now.strftime('%d-%m-%Y %H:%M')}"]
+        ["UTC: #{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"]
       else
         cities_time = CurrentTime::CitiesTime.cities_time(params)
         result(cities_time)
@@ -45,7 +45,7 @@ module CurrentTime
     # @return [Array]
     #  массив с временем городов переданных и текущим временем сервера
     def result(cities_time)
-      utc = "UTC: #{Time.now.strftime('%d-%m-%Y %H:%M')}"
+      utc = "UTC: #{Time.now.strftime('%d-%m-%Y %H:%M:%S')}"
       cities_time.each_with_object([utc]) do |(key, value), memo|
         city = key.gsub(/%20/, ' ')
         memo << "#{city}: #{value}"
